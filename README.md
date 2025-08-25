@@ -4,7 +4,7 @@ This project explores the use of **AI and computer vision** to automatically est
 
 ---
 
-## 🚀 Features
+## Features
 
 - **AI-powered stock estimation** from photos/videos of supermarket shelves  
 - **Frontend Web App** built with **React + Vite** for fast and modern UI  
@@ -15,7 +15,7 @@ This project explores the use of **AI and computer vision** to automatically est
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React + Vite  
 - **Backend**: Node.js + Express  
@@ -25,7 +25,7 @@ This project explores the use of **AI and computer vision** to automatically est
 
 ---
 
-## 📂 Project Structure (suggested)
+##  Project Structure (suggested)
 
 ```
 root/
@@ -41,7 +41,7 @@ root/
 
 ---
 
-## 🔧 Setup Instructions
+##  Setup Instructions
 
 ### 1. Clone the Repository
 ```bash
@@ -79,7 +79,7 @@ python main.py   # Run AI engine
 
 ---
 
-## 🔄 Workflow
+##  Workflow
 
 1. User uploads image/video through the frontend  
 2. File is stored in **Firebase Storage**  
@@ -90,7 +90,7 @@ python main.py   # Run AI engine
 
 ---
 
-## 📌 Roadmap
+##  Roadmap
 
 - ✅ Prototype with open-source AI models  
 - ✅ Basic frontend + backend integration  
@@ -100,7 +100,15 @@ python main.py   # Run AI engine
 
 ---
 
-## 📜 License & Ownership
+##  License & Ownership
 
 All developed materials belong to **La Trobe University**.  
+
+## Members:
+
+Pramit Gautam - Developer
+Queen Bajracharya - Developer
+Ezekeil Pretty - Cybersecurity
+Stacey Jepkemoi - Developer
+Anandhu Binish - AI Engineer
 
