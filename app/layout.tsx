@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavLink from "./components/NavLink";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import NormalMenue from "./components/Menue";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,17 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-black dark:text-white`}
       >
-        <nav>
-          <ul className="flex justify-between list-none items-center p-4 bg-gray-800 text-white">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/about">About</NavLink>
-            <NavLink href="/contacts">Contact</NavLink>
-            <NavLink href="/coding_races">Coding Races</NavLink>
-            <NavLink href="/escape_room">Escape room</NavLink>
-          </ul>
-        </nav>
+        <NormalMenue />
         {children}
       </body>
     </html>
