@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import favicons from "favicons/favicon.ico";
 
 // Define the props that this component will accept
 interface NavLinkProps {
@@ -10,7 +11,7 @@ interface NavLinkProps {
 export default function NavLink({ href, children }: NavLinkProps) {
   // The shared classes are now here in one place
   const linkClasses =
-    "hover:text-blue-400 transition duration-300 active:text-blue-600";
+    "hover:text-blue-400 p-5 transition duration-300 text-2xl active:text-blue-600";
 
   return (
     <li>
