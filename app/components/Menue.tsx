@@ -1,3 +1,5 @@
+//Reference: Use of Github Copilot for handling theme toggle and local storage
+
 "use client";
 import NavLink from "./NavLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,7 +48,7 @@ export default function Menue() {
   return (
     <>
       <nav className="top-21 h-full fixed flex-col">
-        <ul
+        <ul // Hamburger menue for extra content that would otherwise clutter the main menue
           className={`${
             !isOpen ? "hidden" : ""
           } flex-col top-21 fixed h-full justify-between space-y-20 list-none p-4 bg-gray-800 text-white  dark:bg-gray-500`}
@@ -57,7 +59,7 @@ export default function Menue() {
         </ul>
       </nav>
       <nav className="w-full flex justify-around ">
-        <ul
+        <ul // Code for the main menue
           className={`flex w-full justify-between items-center list-none p-8 bg-gray-800 text-white  dark:bg-gray-500`}
         >
           <button

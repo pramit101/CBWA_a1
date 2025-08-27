@@ -4,8 +4,6 @@
 
 import React from "react";
 
-// This is a simple, modern About page component for a Next.js application.
-// It uses Tailwind CSS for all styling and is fully responsive.
 export default function About() {
   return (
     // The main container for the page, centered and styled for a clean layout.

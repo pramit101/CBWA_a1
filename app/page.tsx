@@ -1,3 +1,6 @@
+//Reference: Github Copilot and Google Gemnini for guidance, structure and some snippets
+// Tailwind CSS for styling
+
 "use client";
 
 import Image from "next/image";
@@ -30,7 +33,7 @@ export default function Home() {
       const storedTitles = localStorage.getItem("tab_title");
       const storedContent = localStorage.getItem("tab_content");
 
-      // Use JSON.parse to correctly handle the stored data
+      // Using JSON.parse to handle the stored data
       if (storedTitles) {
         const parsedTitles = JSON.parse(storedTitles);
         // Ensure the parsed value is an array before setting the state
@@ -155,7 +158,7 @@ export default function Home() {
           <input
             type="text"
             value={TabsInputs}
-            onChange={(e) => setTabsInputs(e.target.value)} // co-pilot helped here
+            onChange={(e) => setTabsInputs(e.target.value)} // co-pilot helped on this line
             onKeyDown={handleEnter}
             className="m-2 p-2 border border-gray-900 dark:border-white rounded"
             placeholder={`Tab name...`}
