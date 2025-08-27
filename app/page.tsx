@@ -23,22 +23,38 @@ export default function Home() {
   const [toggleTabInput, setToggleTabInput] = useState(false);
   const [output, setOutput] = useState("");
 
+  //Gemini generate snipppet for localstroage
   useEffect(() => {
-    // Get the theme from local storage if it exists.
-    const storedTitle = localStorage.getItem("tab_title");
-    const storedContent = localStorage.getItem("tab_content");
-    if (storedTitle) {
-      setTabs(storedTitle.split(","));
-    }
-    if (storedContent) {
-      setTabContent(storedContent.split(","));
+    // Load the tabs and content from localStorage on initial render
+    try {
+      const storedTitles = localStorage.getItem("tab_title");
+      const storedContent = localStorage.getItem("tab_content");
+
+      // Use JSON.parse to correctly handle the stored data
+      if (storedTitles) {
+        const parsedTitles = JSON.parse(storedTitles);
+        // Ensure the parsed value is an array before setting the state
+        if (Array.isArray(parsedTitles)) {
+          setTabs(parsedTitles);
+          setIsPressed(parsedTitles.length);
+        }
+      }
+      if (storedContent) {
+        const parsedContent = JSON.parse(storedContent);
+        // Ensure the parsed value is an array before setting the state
+        if (Array.isArray(parsedContent)) {
+          setTabContent(parsedContent);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load data from local storage:", error);
     }
   }, []);
 
   useEffect(() => {
     // co-pilot helped here
-    localStorage.setItem("tab_title", tabs.join(","));
-    localStorage.setItem("tab_content", tabContent.join(","));
+    localStorage.setItem("tab_title", JSON.stringify(tabs));
+    localStorage.setItem("tab_content", JSON.stringify(tabContent));
   }, [tabs, tabContent]);
 
   const handleClick = () => {
@@ -73,23 +89,25 @@ export default function Home() {
   const submit = () => {
     if (tabs.length === 0) return;
     if (tabContent.length === 0) return;
-    if (tabs.length !== tabContent.length) return;
-    let combinedOutput = `<!DOCTYPE html>
+    let combinedOutput = `
+    <!DOCTYPE html>
 <html lang="en" style="width: 100%; height: 100%; margin:0; padding:0;">
 <head>
     <meta charset="UTF-8">
     <title>Output document</title>
 </head>
 <body style="width:100%; height:100%; margin:0; padding:0;">
-    <div style="width: 100%; height: 100%;display:flex; justify-content: center; align-items: center; border : 1px solid black; padding: 5px;">
-        <div id = "main_container" style="width: 500px;height:500px; border: 1px solid black; margin: 10px">
+            <h1 style="text-align: center; margin-bottom: -25px;">This is the generated tabs and its contents</h1>
+    <div style="width: 100%; height: 100%;display:flex; justify-content: center; align-items: center; padding: 5px; ">
+        <div id = "main_container" style="width: 700px;height:650px; border: 1px solid black; margin: 10px ;background-color: #f0f0f5">
             <div id="button_container" style="display:flex;justify-content: space-between;"></div>
-            <div id="text_container" style="margin:20px"></div>
+            <textarea readonly id="text_container" style="margin:20px;resize: none;width:650px;height:500px;padding:10px"></textarea>
         </div>
     </div>
     <script>
         var tab = ${JSON.stringify(tabs)};
         var tabContent = ${JSON.stringify(tabContent)};
+        
         for (var i = 0; i < tab.length; i++) {
             var button = document.createElement("button");
             var ta = document.createElement("div")
@@ -100,10 +118,12 @@ export default function Home() {
             button.style.width = "150px";
             button.style.height = "50px";
             button.style.margin = "20px";
+            button.style.color = "white";
+            button.style.backgroundColor = "#47476b";
 
             button.onclick = (function(index) {
                 return function(){
-                ta.innerHTML = tabContent[index];
+                text_output.value = tabContent[index];
             }
             })(i);
             container.appendChild(button);
@@ -112,7 +132,10 @@ export default function Home() {
 
     </script>
 </body>
-</html>`;
+</html>
+
+         
+  `;
     setOutput(combinedOutput);
   };
 
@@ -142,18 +165,16 @@ export default function Home() {
           </button>
         </div>
         {tabs.map((tab, index) => (
-          <>
-            <div
-              key={index}
-              onClick={() => {
-                setTabClickId(index);
-                setToggleTabInput(true);
-              }}
-              className="m-2 p-2 border border-gray-300 rounded"
-            >
-              {tab}
-            </div>
-          </>
+          <div
+            key={index}
+            onClick={() => {
+              setTabClickId(index);
+              setToggleTabInput(true);
+            }}
+            className="m-2 p-2 border border-black bg-gray-400 rounded"
+          >
+            {tab}
+          </div>
         ))}
       </div>
       <div className={` ${toggleTabInput ? "block" : "hidden"} block`}>
@@ -167,8 +188,8 @@ export default function Home() {
             newTabContent[tabClickId] = e.target.value;
             setTabContent(newTabContent);
           }}
-          className="resize-none border-2 border-black dark:border-white p-5"
-          rows={25}
+          className="resize-none border-2 border-gray-500  p-5"
+          rows={22}
           cols={50}
         ></textarea>
       </div>
@@ -181,8 +202,10 @@ export default function Home() {
           <FontAwesomeIcon icon={faEye} />
         </div>
         <textarea
-          className="block  border-red-500 border-2 resize-none p-5"
-          rows={25}
+          readOnly
+          placeholder="Output will be shown here..."
+          className="block  border-green-500 border-2 resize-none p-5"
+          rows={22}
           cols={70}
           value={output}
         ></textarea>
