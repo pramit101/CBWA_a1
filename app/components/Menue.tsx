@@ -51,9 +51,9 @@ export default function Menue() {
             !isOpen ? "hidden" : ""
           } flex-col top-21 fixed h-full justify-between space-y-20 list-none p-4 bg-gray-800 text-white  dark:bg-gray-500`}
         >
-          <NavLink href="/">Home</NavLink>
-          <NavLink href="/about">About</NavLink>
-          <NavLink href="/contacts">Contact</NavLink>
+          <NavLink href="/">HOME</NavLink>
+          <NavLink href="/about">ABOUT</NavLink>
+          <NavLink href="/contacts">CONTACT</NavLink>
         </ul>
       </nav>
       <nav className="w-full flex justify-around ">
@@ -66,9 +66,9 @@ export default function Menue() {
           >
             <FontAwesomeIcon icon={isOpen ? faXmark : faBars} />
           </button>
-          <NavLink href="/">Tabs</NavLink>
-          <NavLink href="/coding_races">Coding Races</NavLink>
-          <NavLink href="/escape_room">Escape room</NavLink>
+          <NavLink href="/">TABS</NavLink>
+          <NavLink href="/coding_races">CODING RACES</NavLink>
+          <NavLink href="/escape_room">ESCAPE ROOM</NavLink>
           <h1 className="text-2xs">Student Number: 21951900</h1>
           <button onClick={toggleTheme}>
             <span className="text-xl text-amber-300">
