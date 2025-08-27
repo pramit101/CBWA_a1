@@ -5,6 +5,7 @@ import NavLink from "./components/NavLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import NormalMenue from "./components/Menue";
+import Footer from "./components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         <NormalMenue />
         {children}
+        <Footer />
       </body>
     </html>
   );
