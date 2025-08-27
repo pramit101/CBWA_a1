@@ -24,7 +24,7 @@ export default function About() {
         {/* Video Section */}
         <section className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center">
-            My Video Presentation
+            Walkthrough of the application
           </h2>
 
           {/*
@@ -38,8 +38,8 @@ export default function About() {
             {/* Example: Replace the placeholder iframe below with your actual video embed code */}
             <iframe
               className="absolute top-0 left-0 w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Placeholder Video"
+              src="https://www.youtube.com/embed/2Zq-D9fW13w"
+              title="CBWA video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
