@@ -1,0 +1,76 @@
+.plusIcon {
+    width: 80px;
+    height: 80px;
+    background: white;
+    opacity: 0.5;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: pop 1.5s ease-in-out infinite;
+  }
+
+  .plusIcon::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 6px;
+    background: #667eea;
+    border-radius: 3px;
+  }
+
+  .plusIcon::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 40px;
+    background: #667eea;
+    border-radius: 3px;
+  }
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .plusIcon:hover {
+    animation: pop 0.8s ease-in-out infinite;
+    opacity: 1;
+  }
+  @keyframes keyPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .golden-key {
+    animation: keyPulse 1.5s ease-in-out infinite;
+    cursor: pointer;
+    filter: drop-shadow(0 0 15px rgba(218, 165, 32, 0.6));
+    transition: filter 0.3s ease;
+  }
+
+  .golden-key:hover {
+    animation: keyPulse 0.9s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(218, 165, 32, 0.9));
+  }
+
+  .golden-key:active {
+    animation: none;
+    transform: scale(1.2);
+  }
