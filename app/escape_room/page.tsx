@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { ChevronUp, ChevronDown, Key } from "lucide-react";
+import { ChevronUp, ChevronDown, Key, Clock } from "lucide-react";
 import styles from "./page.module.css";
 import Keypad from "./components/keypad";
 import HintPopup from "./components/Hint";
@@ -58,12 +58,53 @@ export default function EscapeRoom() {
   const [HQ, setHQ] = useState("");
   const [HA, setHA] = useState("");
   const [UA, setUA] = useState("");
+  const [PM, setPM] = useState(false);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
   const [chunks, setChunks] = useState<string[]>([" ", " ", " ", " ", " "]);
 
   const handleSetCode = () => {
     if (codeInput.trim() !== "") {
       setConfirmedCode(codeInput.trim());
     }
+  };
+
+  useEffect(() => {
+    if (!isRunning) return; // only run when active
+    if (timeLeft <= 0) {
+      setGameOver(true);
+      setIsRunning(false);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRunning, timeLeft]);
+
+  const startCountdown = () => {
+    if (minutes > 0) {
+      setTimeLeft(minutes * 60);
+      setGameOver(false);
+      setIsRunning(true);
+    }
+  };
+
+  const resetCountdown = () => {
+    setIsRunning(false);
+    setGameOver(false);
+    setTimeLeft(0);
+  };
+
+  // Format time (mm:ss)
+  const formatTime = (t: number) => {
+    const m = Math.floor(t / 60);
+    const s = t % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   const backgrounds = [
@@ -92,7 +133,9 @@ export default function EscapeRoom() {
         <div className="relative w-full h-full">
           <button
             onClick={() => setPopup("keypad")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `46%`,
@@ -105,7 +148,9 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => setPopup("symbols")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `72%`,
@@ -119,7 +164,9 @@ export default function EscapeRoom() {
 
           <button
             onClick={() => setPopup("help")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `68%`,
@@ -137,7 +184,9 @@ export default function EscapeRoom() {
         <div className="relative w-full h-full">
           <button
             onClick={() => setPopup("quizpad")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `46%`,
@@ -150,7 +199,9 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => setPopup("quizHint")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `10%`,
@@ -168,7 +219,9 @@ export default function EscapeRoom() {
         <div className="relative w-full h-full">
           <button
             onClick={() => setPopup("h1")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `87%`,
@@ -181,7 +234,9 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => setPopup("FillBlanks")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `42%`,
@@ -194,7 +249,9 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => setPopup("h2")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `15%`,
@@ -207,7 +264,9 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => setPopup("h3")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `12%`,
@@ -226,10 +285,12 @@ export default function EscapeRoom() {
           <button
             className={`${preview && !k1 ? "opacity-0" : "opacity-100"}`}
             onClick={() => {
-              setPopup("key");
-              setK1(true);
               if (!k1) {
-                setKeyCount(keyCount + 1);
+                if (PM) {
+                  setPopup("key");
+                  setK1(true);
+                  setKeyCount(keyCount + 1);
+                }
               }
             }}
             style={{
@@ -251,7 +312,9 @@ export default function EscapeRoom() {
           </button>
           <button
             onClick={() => setPopup("hiddenQuestion")}
-            className={styles.plusIcon}
+            className={`${
+              PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+            } transition-opacity duration-500 ${styles.plusIcon}`}
             style={{
               position: "absolute",
               left: `42%`,
@@ -264,10 +327,12 @@ export default function EscapeRoom() {
           />
           <button
             onClick={() => {
-              setPopup("key");
-              setK2(true);
               if (!k2) {
-                setKeyCount(keyCount + 1);
+                if (PM) {
+                  setPopup("key");
+                  setK2(true);
+                  setKeyCount(keyCount + 1);
+                }
               }
             }}
             className={`${preview && !k2 ? "opacity-0" : "opacity-100"}`}
@@ -292,10 +357,12 @@ export default function EscapeRoom() {
 
           <button
             onClick={() => {
-              setPopup("key");
-              setK3(true);
               if (!k3) {
-                setKeyCount(keyCount + 1);
+                if (PM) {
+                  setPopup("key");
+                  setK3(true);
+                  setKeyCount(keyCount + 1);
+                }
               }
             }}
             className={`${preview && !k3 ? "opacity-0" : "opacity-100"}`}
@@ -323,7 +390,9 @@ export default function EscapeRoom() {
       return (
         <button
           onClick={() => setPopup("sequence")}
-          className={styles.plusIcon}
+          className={`${
+            PM ? "opacity-0" : "opacity-60 hover:opacity-100"
+          } transition-opacity duration-500 ${styles.plusIcon}`}
           style={{
             position: "absolute",
             left: `35%`,
@@ -386,457 +455,497 @@ export default function EscapeRoom() {
       <div className="flex-1 p-8 resize-none">
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Escape Room Builder
-            </h1>
-            <p className="text-gray-600">
-              Currently editing:{" "}
-              <span className="font-semibold">{currentLayer?.name}</span>
-            </p>
+          <div className="flex items-center justify-between mb-4">
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">
+                Escape Room Builder
+              </h1>
+              <p className="text-gray-600">
+                Currently editing:{" "}
+                <span className="font-semibold">{currentLayer?.name}</span>
+              </p>
+            </div>
+            <div className="flex items-center space-x-4 mt-18">
+              <h2 className="mb-3 font-bold">Set timer</h2>
+              <input
+                type="number"
+                min="5"
+                placeholder="Enter Minutes"
+                className="border p-2 w-1/2 mb-3 rounded"
+                value={minutes || ""}
+                onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+              />
+              <Clock size={24} className="text-gray-600 mb-3" />{" "}
+            </div>
+            <div className="space-x-5 mr-20 mt-15">
+              <button
+                onClick={() => {
+                  setPreview(false);
+                  setPM(false);
+                  resetCountdown();
+                }}
+                className={`bg-red-600 ${
+                  PM ? "" : "border-blue-500 border-5"
+                } rounded-lg p-2 text-white cursor-pointer`}
+              >
+                Edit mode
+              </button>
+              <button
+                onClick={() => {
+                  setPreview(true);
+                  setPM(true);
+                  startCountdown();
+                }}
+                className={`bg-green-600 ${
+                  PM ? "border-blue-500 border-5" : ""
+                } rounded-lg p-2 text-white cursor-pointer`}
+              >
+                Player Mode
+              </button>
+            </div>
           </div>
 
           {/* Canvas */}
           <div className="relative flex-1 h-[500px] w-260 rounded-lg resize-none shadow-2xl border-4 border-gray-300 cursor-crosshair overflow-hidden">
-            <Image
-              src={backgrounds[currentBgIndex]}
-              alt="Golden key"
-              fill
-              className="object-cover rounded-lg overflow-hidden resize-none"
-            />
-
-            <Buttons />
-            {popup === "keypad" && (
-              <div
-                className="fixed inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
-                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            {gameOver ? (
+              <div className="flex flex-col justify-center items-center h-full w-full bg-black bg-opacity-75 z-50">
+                <h1 className="text-red-600 text-6xl">You ran out of time!</h1>
+                <button
+                  className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  onClick={() => {
+                    startCountdown();
+                  }}
                 >
-                  <h2 className="text-xl font-bold mb-4 text-center">
-                    Set the pass code (4-digits)
-                  </h2>
-                  <input
-                    type="text"
-                    placeholder="Set the code to pass"
-                    value={codeInput}
-                    onChange={(e) => {
-                      setCodeInput(e.target.value);
-                    }}
-                  />
-                  <button
-                    onClick={handleSetCode}
-                    className="bg-blue-500 text-white ml-4 px-4 py-2 rounded"
-                  >
-                    {confirmedCode ? "Change Code" : "Set Code"}
-                  </button>
-                  <button
-                    onClick={() => setPreview(!preview)}
-                    className="bg-green-500 text-white ml-4 px-4 py-2 rounded"
-                  >
-                    Preview
-                  </button>
-                  {preview ? <Keypad correctCode={codeInput} /> : ""}
-                  <button
-                    onClick={() => setPopup(null)}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
-                  >
-                    Close
-                  </button>
-                </div>
+                  RESTART
+                </button>
               </div>
-            )}
-            {(popup === "symbols" || popup == "quizHint") && (
-              <div
-                className="absolute inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2 className="text-xl font-bold mb-4">Hint</h2>
-                  {popup == "symbols" ? (
-                    <textarea
-                      placeholder="Place the hint to acess the keypad password"
-                      className="p-2"
-                      onChange={(e) => setHint(e.target.value)}
-                      value={hint}
-                    ></textarea>
-                  ) : (
-                    <textarea
-                      placeholder="Place the hint to acess the quiz"
-                      className="p-2"
-                      onChange={(e) => setQuizUnlock(e.target.value)}
-                      value={quizUnlock}
-                    ></textarea>
-                  )}
-
-                  <button
-                    onClick={() => {
-                      setPreview(!preview);
-                    }}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Preview
-                  </button>
-                  <button
+            ) : (
+              <>
+                <Image
+                  src={backgrounds[currentBgIndex]}
+                  alt="Golden key"
+                  fill
+                  className="object-cover rounded-lg overflow-hidden resize-none"
+                />
+                <div className="text-3xl font-mono mb-4 z-index-60 absolute top-8 left-2  bg-black bg-opacity-50 text-white px-3 py-1 rounded-lg">
+                  {timeLeft > 0 ? formatTime(timeLeft) : "00:00"}
+                </div>
+                <h3 className=" z-index-60 text-l font-strong  absolute top-2 left-8 text-white">
+                  TIMER
+                </h3>
+                <Buttons />
+                {popup === "keypad" && (
+                  <div
+                    className="fixed inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
                     onClick={() => {
                       setPopup(null);
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Close
-                  </button>
-                  {preview && popup == "symbols" ? (
-                    <HintPopup
-                      hint={hint}
-                      onClose={() => {
-                        setPopup(null);
+                      if (!PM) {
                         setPreview(false);
-                      }}
-                    />
-                  ) : preview && popup == "quizHint" ? (
-                    <QuizHintPopup
-                      hint={quizUnlock}
-                      onClose={() => {
-                        setPopup(null);
-                        setPreview(false);
-                      }}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-            )}
-            {popup === "help" && (
-              <div
-                className="absolute inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2 className="text-xl font-bold mb-4">Help</h2>
-                  <textarea
-                    placeholder="Place the Help description on how to play and navigate through the escape room"
-                    className="p-2"
-                    rows={6}
-                    onChange={(e) => setHelpContent(e.target.value)}
-                    value={helpContent}
-                  ></textarea>
-                  <button
-                    onClick={() => {
-                      setPreview(!preview);
+                      }
                     }}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-blue-700 transition"
                   >
-                    Preview
-                  </button>
-                  <button
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
+                      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                      {preview ? (
+                        <Keypad correctCode={codeInput} />
+                      ) : (
+                        <>
+                          <h2 className="text-xl font-bold mb-4 text-center">
+                            Set the pass code (4-digits)
+                          </h2>
+                          <input
+                            type="text"
+                            placeholder="Set the code to pass"
+                            value={codeInput}
+                            onChange={(e) => {
+                              setCodeInput(e.target.value);
+                            }}
+                          />
+                          <button
+                            onClick={handleSetCode}
+                            className="bg-blue-500 text-white ml-4 px-4 py-2 rounded"
+                          >
+                            {confirmedCode ? "Change Code" : "Set Code"}
+                          </button>
+                          <button
+                            onClick={() => setPopup(null)}
+                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
+                          >
+                            Close
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {(popup === "symbols" || popup == "quizHint") && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
                     onClick={() => {
                       setPopup(null);
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Close
-                  </button>
-                  {preview ? (
-                    <HelpPopup
-                      content={helpContent}
-                      onClose={() => {
-                        setPopup(null);
+                      if (!PM) {
                         setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {popup == "symbols" && !preview ? (
+                        <>
+                          <h2 className="text-xl font-bold mb-4">Hint</h2>
+                          <textarea
+                            placeholder="Place the hint to acess the keypad password"
+                            className="p-2"
+                            onChange={(e) => setHint(e.target.value)}
+                            value={hint}
+                          ></textarea>
+                          <button
+                            onClick={() => {
+                              setPopup(null);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          >
+                            Close
+                          </button>
+                        </>
+                      ) : popup == "quizHint" && !preview ? (
+                        <>
+                          <h2 className="text-xl font-bold mb-4">Hint</h2>
+                          <textarea
+                            placeholder="Place the hint to acess the quiz"
+                            className="p-2"
+                            onChange={(e) => setQuizUnlock(e.target.value)}
+                            value={quizUnlock}
+                          ></textarea>
+                          <button
+                            onClick={() => {
+                              setPopup(null);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          >
+                            Close
+                          </button>
+                        </>
+                      ) : (
+                        ""
+                      )}
+
+                      {preview && popup == "symbols" ? (
+                        <HintPopup
+                          hint={hint}
+                          onClose={() => {
+                            setPopup(null);
+                          }}
+                        />
+                      ) : preview && popup == "quizHint" ? (
+                        <QuizHintPopup
+                          hint={quizUnlock}
+                          onClose={() => {
+                            setPopup(null);
+                          }}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                )}
+                {popup === "help" && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                    onClick={() => {
+                      setPopup(null);
+                      if (!PM) {
+                        setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {preview ? (
+                        <HelpPopup
+                          content={helpContent}
+                          onClose={() => {
+                            setPopup(null);
+                          }}
+                        />
+                      ) : (
+                        <>
+                          <h2 className="text-xl font-bold mb-4">Help</h2>
+                          <textarea
+                            placeholder="Place the Help description on how to play and navigate through the escape room"
+                            className="p-2"
+                            rows={6}
+                            onChange={(e) => setHelpContent(e.target.value)}
+                            value={helpContent}
+                          ></textarea>
+                          <button
+                            onClick={() => {
+                              setPopup(null);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          >
+                            Close
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {popup === "quizpad" && (
+                  <div
+                    className="fixed inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                    onClick={() => {
+                      setPopup(null);
+                      if (!PM) {
+                        setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
+                      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                      {preview ? (
+                        <QuizPlay quiz={quiz} pass={quizUnlock} />
+                      ) : (
+                        <>
+                          <h2 className="text-xl font-bold mb-4 text-center">
+                            Set the correct answer to unlock quiz
+                          </h2>
+                          <input
+                            type="text"
+                            placeholder="Set the answer"
+                            className="p-2"
+                            value={quizUnlock}
+                            onChange={(e) => {
+                              setQuizUnlock(e.target.value);
+                            }}
+                          />
+                          <button
+                            onClick={handleSetCode}
+                            className="bg-blue-500 text-white ml-4 px-4 py-2 m-2 rounded"
+                          >
+                            {confirmedCode ? "Change Answer" : "Set Answer"}
+                          </button>
+                          <QuizBoard quiz={quiz} setQuiz={setQuiz} />
+                          <button
+                            onClick={() => setPopup(null)}
+                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
+                          >
+                            Close
+                          </button>{" "}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {popup === "FillBlanks" && (
+                  <div
+                    className="fixed inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                    onClick={() => {
+                      setPopup(null);
+                      if (!PM) {
+                        setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
+                      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                      <>
+                        <h2 className="text-xl font-bold mb-4 text-center">
+                          Set the correct answer to unlock quiz
+                        </h2>
+                        <FillInBlanks isOwner={!preview} />
+                        <button
+                          onClick={() => setPopup(null)}
+                          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
+                        >
+                          Close
+                        </button>{" "}
+                      </>
+                    </div>
+                  </div>
+                )}
+                {(popup === "h1" || popup == "h2" || popup == "h3") && (
+                  <>
+                    <div
+                      className="fixed inset-0 flex items-center justify-center z-30"
+                      style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                      onClick={() => {
+                        setPopup(null);
+                        if (!PM) {
+                          setPreview(false);
+                        }
                       }}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-            )}
-            {popup === "quizpad" && (
-              <div
-                className="fixed inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
-                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                >
-                  {preview ? (
-                    <QuizPlay quiz={quiz} pass={quizUnlock} />
-                  ) : (
-                    <>
-                      <h2 className="text-xl font-bold mb-4 text-center">
-                        Set the correct answer to unlock quiz
-                      </h2>
-                      <input
-                        type="text"
-                        placeholder="Set the answer"
-                        className="p-2"
-                        value={quizUnlock}
-                        onChange={(e) => {
-                          setQuizUnlock(e.target.value);
-                        }}
-                      />
-                      <button
-                        onClick={handleSetCode}
-                        className="bg-blue-500 text-white ml-4 px-4 py-2 m-2 rounded"
+                    >
+                      <div
+                        className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
+                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
                       >
-                        {confirmedCode ? "Change Answer" : "Set Answer"}
-                      </button>
-                      <QuizBoard quiz={quiz} setQuiz={setQuiz} />
-                      <button
-                        onClick={() => setPreview(!preview)}
-                        className="bg-green-500 text-white ml-4 mt-2 px-4 py-2 rounded"
-                      >
-                        Preview
-                      </button>
+                        <h2 className="font-bold mb-4 text-center text-xl">
+                          {popup == "h1"
+                            ? "Hint 1"
+                            : popup == "h2"
+                            ? "Hint 2"
+                            : "Hint 3"}
+                        </h2>
+                        {popup == "h1" ? (
+                          <textarea
+                            placeholder="Place the hint 1 description here"
+                            className={`p-2 w-full border-gray-300 border-2 ${
+                              preview ? "readonly" : ""
+                            }`}
+                            readOnly={preview}
+                            rows={6}
+                            onChange={(e) => setH1(e.target.value)}
+                            value={h1}
+                          ></textarea>
+                        ) : popup == "h2" ? (
+                          <textarea
+                            placeholder="Place the hint 2 description here"
+                            className={`p-2 w-full border-gray-300 border-2 ${
+                              preview ? "readonly" : ""
+                            }`}
+                            readOnly={preview}
+                            rows={6}
+                            onChange={(e) => setH2(e.target.value)}
+                            value={h2}
+                          ></textarea>
+                        ) : (
+                          <textarea
+                            placeholder="Place the hint 3 description here"
+                            className={`p-2 w-full border-gray-300 border-2 ${
+                              preview ? "readonly" : ""
+                            }`}
+                            readOnly={preview}
+                            rows={6}
+                            onChange={(e) => setH3(e.target.value)}
+                            value={h3}
+                          ></textarea>
+                        )}
+                        {preview ? "" : ""}
+                        <button
+                          onClick={() => setPopup(null)}
+                          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
+                        >
+                          Close
+                        </button>{" "}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {popup === "hiddenQuestion" && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                    onClick={() => {
+                      setPopup(null);
+                      if (!PM) {
+                        setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {preview ? (
+                        <>
+                          <h2>
+                            {keyCount >= 3 ? (
+                              <span className="font-normal text-lg">{`Question: ${HQ}`}</span>
+                            ) : (
+                              "Find all 3 keys to unlock the question!"
+                            )}
+                            <input
+                              type="text"
+                              placeholder="Answer the question here"
+                              onChange={(e) => setUA(e.target.value)}
+                              value={UA}
+                              className="p-2 w-full border-gray-300 border-2 mt-4"
+                            />
+                          </h2>
+                          {UA == HA ? (
+                            <h2>✅ Correct Answer!</h2>
+                          ) : (
+                            <h2>❌ Try Again!</h2>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <h2 className="text-xl font-bold mb-4">
+                            Question:{" "}
+                            <input
+                              type="text"
+                              placeholder="Set your question here"
+                              className="p-2 w-full border-gray-300 border-2"
+                              onChange={(e) => setHQ(e.target.value)}
+                              value={HQ}
+                            ></input>
+                          </h2>
+                          <input
+                            type="text"
+                            placeholder="Set the answer here"
+                            className="p-2 w-full border-gray-300 border-2"
+                            onChange={(e) => setHA(e.target.value)}
+                            value={HA}
+                          />
+                        </>
+                      )}
                       <button
                         onClick={() => setPopup(null)}
                         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
                       >
                         Close
                       </button>{" "}
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-            {popup === "FillBlanks" && (
-              <div
-                className="fixed inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
-                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                >
-                  <>
-                    <h2 className="text-xl font-bold mb-4 text-center">
-                      Set the correct answer to unlock quiz
-                    </h2>
-                    <FillInBlanks isOwner={!preview} />
-                    <button
-                      onClick={() => setPreview(!preview)}
-                      className="bg-green-500 text-white ml-4 mt-2 px-4 py-2 rounded"
-                    >
-                      Preview
-                    </button>
-                    <button
-                      onClick={() => setPopup(null)}
-                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
-                    >
-                      Close
-                    </button>{" "}
-                  </>
-                </div>
-              </div>
-            )}
-            {(popup === "h1" || popup == "h2" || popup == "h3") && (
-              <>
-                <div
-                  className="fixed inset-0 flex items-center justify-center z-30"
-                  style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                  onClick={() => {
-                    setPopup(null);
-                    setPreview(false);
-                  }}
-                >
-                  <div
-                    className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
-                    onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                  >
-                    <h2 className="font-bold mb-4 text-center text-xl">
-                      {popup == "h1"
-                        ? "Hint 1"
-                        : popup == "h2"
-                        ? "Hint 2"
-                        : "Hint 3"}
-                    </h2>
-                    {popup == "h1" ? (
-                      <textarea
-                        placeholder="Place the hint 1 description here"
-                        className={`p-2 w-full border-gray-300 border-2 ${
-                          preview ? "readonly" : ""
-                        }`}
-                        readOnly={preview}
-                        rows={6}
-                        onChange={(e) => setH1(e.target.value)}
-                        value={h1}
-                      ></textarea>
-                    ) : popup == "h2" ? (
-                      <textarea
-                        placeholder="Place the hint 2 description here"
-                        className={`p-2 w-full border-gray-300 border-2 ${
-                          preview ? "readonly" : ""
-                        }`}
-                        readOnly={preview}
-                        rows={6}
-                        onChange={(e) => setH2(e.target.value)}
-                        value={h2}
-                      ></textarea>
-                    ) : (
-                      <textarea
-                        placeholder="Place the hint 3 description here"
-                        className={`p-2 w-full border-gray-300 border-2 ${
-                          preview ? "readonly" : ""
-                        }`}
-                        readOnly={preview}
-                        rows={6}
-                        onChange={(e) => setH3(e.target.value)}
-                        value={h3}
-                      ></textarea>
-                    )}
-                    {preview ? (
-                      ""
-                    ) : (
-                      <button
-                        onClick={() => setPreview(!preview)}
-                        className="bg-green-500 text-white ml-4 mt-2 px-4 py-2 rounded"
-                      >
-                        Preview
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setPopup(null)}
-                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
-                    >
-                      Close
-                    </button>{" "}
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
-            {popup === "hiddenQuestion" && (
-              <div
-                className="absolute inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg flex space-y-5 flex-col"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {preview ? (
-                    <>
-                      <h2>
-                        {keyCount >= 3 ? (
-                          <span className="font-normal text-lg">{`Question: ${HQ}`}</span>
-                        ) : (
-                          "Find all 3 keys to unlock the question!"
-                        )}
-                        <input
-                          type="text"
-                          placeholder="Answer the question here"
-                          onChange={(e) => setUA(e.target.value)}
-                          value={UA}
-                          className="p-2 w-full border-gray-300 border-2 mt-4"
-                        />
-                      </h2>
-                      {UA == HA ? (
-                        <h2>✅ Correct Answer!</h2>
-                      ) : (
-                        <h2>❌ Try Again!</h2>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <h2 className="text-xl font-bold mb-4">
-                        Question:{" "}
-                        <input
-                          type="text"
-                          placeholder="Set your question here"
-                          className="p-2 w-full border-gray-300 border-2"
-                          onChange={(e) => setHQ(e.target.value)}
-                          value={HQ}
-                        ></input>
-                      </h2>
-                      <input
-                        type="text"
-                        placeholder="Set the answer here"
-                        className="p-2 w-full border-gray-300 border-2"
-                        onChange={(e) => setHA(e.target.value)}
-                        value={HA}
+                )}
+                {popup === "sequence" && (
+                  <div
+                    className="fixed inset-0 flex items-center justify-center z-30"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+                    onClick={() => {
+                      setPopup(null);
+                      if (!PM) {
+                        setPreview(false);
+                      }
+                    }}
+                  >
+                    <div
+                      className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
+                      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                      <SequencePuzzle
+                        isOwner={!preview}
+                        initialChunks={chunks}
+                        correctSequence={chunks}
+                        setChunks={setChunks}
                       />
                       <button
-                        onClick={() => setPreview(!preview)}
-                        className="bg-green-500 text-white ml-4 mt-2 px-4 py-2 rounded"
+                        onClick={() => setPopup(null)}
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
                       >
-                        Preview
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => setPopup(null)}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
-                  >
-                    Close
-                  </button>{" "}
-                </div>
-              </div>
-            )}
-            {popup === "sequence" && (
-              <div
-                className="fixed inset-0 flex items-center justify-center z-30"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                onClick={() => {
-                  setPopup(null);
-                  setPreview(false);
-                }}
-              >
-                <div
-                  className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4"
-                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                >
-                  <SequencePuzzle
-                    isOwner={!preview}
-                    initialChunks={chunks}
-                    correctSequence={chunks}
-                    setChunks={setChunks}
-                  />
-                  <button
-                    onClick={() => setPreview(!preview)}
-                    className="bg-green-500 text-white ml-4 mt-2 px-4 py-2 rounded"
-                  >
-                    Preview
-                  </button>
-                  <button
-                    onClick={() => setPopup(null)}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full"
-                  >
-                    Close
-                  </button>{" "}
-                </div>
-              </div>
+                        Close
+                      </button>{" "}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
