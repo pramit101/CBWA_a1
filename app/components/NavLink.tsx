@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import favicons from "favicons/favicon.ico";
 
 // Define the props that this component will accept
 interface NavLinkProps {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronUp, ChevronDown, Key, Clock } from "lucide-react";
 import styles from "./page.module.css";
@@ -25,14 +25,6 @@ interface QuizQuestion {
   answer: string;
 }
 
-function shuffleArray<T>(array: T[]): T[] {
-  const arr = [...array]; // make a copy so original is not mutated
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 export default function EscapeRoom() {
   const [layers, setLayers] = useState<Layer[]>([
     { id: 1, name: "Layer 1", background: 0 },
@@ -40,7 +32,6 @@ export default function EscapeRoom() {
   const [currentLayerId, setCurrentLayerId] = useState(1);
   const [currentBgID, setCurrentBgID] = useState(1);
   const [layerCount, setLayerCount] = useState(1);
-  const [showLayerInput, setShowLayerInput] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [confirmedCode, setConfirmedCode] = useState("");
   const [preview, setPreview] = useState(false);

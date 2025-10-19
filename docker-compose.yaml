@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    image: nextjs-app:latest
+    container_name: nextjs-app
+    ports:
+      - "80:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0

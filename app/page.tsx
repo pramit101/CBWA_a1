@@ -3,9 +3,6 @@
 
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import NavLink from "./components/NavLink";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,7 +14,6 @@ import {
 
 export default function Home() {
   const [isPressed, setIsPressed] = useState(0);
-  const [isPressed2, setIsPressed2] = useState(0);
   const [tabs, setTabs] = useState<string[]>([]);
   const [tabContent, setTabContent] = useState<string[]>([]);
   const [TabsInputs, setTabsInputs] = useState("");
@@ -92,7 +88,7 @@ export default function Home() {
   const submit = () => {
     if (tabs.length === 0) return;
     if (tabContent.length === 0) return;
-    let combinedOutput = `
+    const combinedOutput = `
     <!DOCTYPE html>
 <html lang="en" style="width: 100%; height: 100%; margin:0; padding:0;">
 <head>
