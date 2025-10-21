@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { ChevronUp, ChevronDown, Key, Clock } from "lucide-react";
 import styles from "./page.module.css";
 import Keypad from "./components/keypad";
@@ -12,6 +12,7 @@ import QuizPlay from "./components/QuizPlay";
 import QuizHintPopup from "./components/quizHintPopup";
 import FillInBlanks from "./components/FillBlanks";
 import SequencePuzzle from "./components/sequence";
+import { layer } from "@fortawesome/fontawesome-svg-core";
 
 interface Layer {
   id: number;
@@ -57,27 +58,26 @@ export default function EscapeRoom() {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
-  const [SessionId, setSessionId] = useState(null)
-  const [questions, setQuestions] = useState<string[]>([]) 
+  const [SessionId, setSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [roomIndex, setRoomIndex] = useState<number>(0)
   const [isSaving, setIsSaving] = useState(false);
   const [chunks, setChunks] = useState<string[]>([" ", " ", " ", " ", " "]);
 
   useEffect(() => {
     const loadSession = async () => {
-      const storedSessionId = localStorage.getItem('escapeRoomSessionId');
-      
+      const storedSessionId = localStorage.getItem("escapeRoomSessionId");
+
       if (storedSessionId) {
         try {
-          const response = await fetch(`/api/escape-room/load?sessionId=${storedSessionId}`);
-          
+          const response = await fetch(
+            `/api/escape-room/load?sessionId=${storedSessionId}`
+          );
+
           if (response.ok) {
             const data = await response.json();
-            
+
             // Restore ALL state
             setSessionId(data.id);
-            setRoomIndex(data.roomName);
             setLayerCount(data.layerCount);
             setMinutes(data.timerMinutes);
             setLayers(data.layers);
@@ -92,31 +92,29 @@ export default function EscapeRoom() {
             setHQ(data.hiddenQuestion);
             setHA(data.hiddenAnswer);
             setChunks(data.sequenceChunks);
-            
-            console.log('Session loaded:', data.id);
+
+            console.log("Session loaded:", data.id);
           }
         } catch (error) {
-          console.error('Error loading session:', error);
+          console.error("Error loading session:", error);
         }
       }
-      
+
       setIsLoading(false);
     };
-  
+
     loadSession();
   }, []);
 
-
   const handleSave = async () => {
     setIsSaving(true);
-    
+
     try {
-      const response = await fetch('/api/escape-room/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/escape-room/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId: SessionId,
-          roomIndex: roomIndex,
           layerCount: layerCount,
           timerMinutes: minutes,
           layers: layers,
@@ -130,21 +128,21 @@ export default function EscapeRoom() {
           h3: h3,
           hiddenQuestion: HQ,
           hiddenAnswer: HA,
-          sequenceChunks: chunks
-        })
+          sequenceChunks: chunks,
+        }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('escapeRoomSessionId', data.id);
+        localStorage.setItem("escapeRoomSessionId", data.id);
         setSessionId(data.id);
-        alert('Saved successfully!');
+        alert("Saved successfully!");
       }
     } catch (error) {
-      console.error('Error saving:', error);
-      alert('Error saving session');
+      console.error("Error saving:", error);
+      alert("Error saving session");
     }
-    
+
     setIsSaving(false);
   };
 
@@ -205,7 +203,6 @@ export default function EscapeRoom() {
     "Data center",
     "Exit",
   ];
-
 
   const Buttons = () => {
     if (currentBgIndex == 0) {
@@ -515,7 +512,6 @@ export default function EscapeRoom() {
   };
 
   const handleBackgroundChange = (index: number) => {
-    setCurrentBgID(index + 1);
     if (currentLayer) {
       setLayers(
         layers.map((l) =>
@@ -571,6 +567,7 @@ export default function EscapeRoom() {
                 Edit mode
               </button>
               <button
+                role="button"
                 onClick={() => {
                   setPreview(true);
                   setPM(true);
@@ -602,7 +599,7 @@ export default function EscapeRoom() {
             ) : (
               <>
                 <Image
-                  src={backgrounds[layers[currentLayerId].background]}
+                  src={backgrounds[layers[currentLayerId - 1].background]}
                   alt="Golden key"
                   fill
                   className="object-cover rounded-lg overflow-hidden resize-none"
@@ -612,6 +609,7 @@ export default function EscapeRoom() {
                 </div>
                 <h3 className=" z-index-60 text-l font-strong  absolute top-2 left-8 text-white">
                   TIMER
+                  {layers.map((layer) => layer.background)}
                 </h3>
                 <Buttons />
                 {popup === "keypad" && (
@@ -637,6 +635,7 @@ export default function EscapeRoom() {
                             Set the pass code (4-digits)
                           </h2>
                           <input
+                            role="input"
                             type="text"
                             placeholder="Set the code to pass"
                             value={codeInput}
@@ -1117,6 +1116,13 @@ export default function EscapeRoom() {
               </button>
             ))}
           </div>
+          <button
+            role="button"
+            onClick={handleSave}
+            className="mt-6 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            Save Progress
+          </button>
         </div>
       </div>
     </div>

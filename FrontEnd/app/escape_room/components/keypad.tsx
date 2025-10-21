@@ -38,10 +38,13 @@ export default function Keypad({ correctCode, onSuccess }: KeypadProps) {
   const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen  from-slate-900 via-slate-800 to-slate-900 p-6">
       <div className="w-full max-w-sm">
         {/* Title */}
-        <h1 className="text-center text-3xl font-bold text-cyan-400 mb-8 tracking-wider font-mono">
+        <h1
+          role="heading"
+          className="text-center text-3xl font-bold text-cyan-400 mb-8 tracking-wider font-mono"
+        >
           ACCESS KEYPAD
         </h1>
 
@@ -74,12 +77,12 @@ export default function Keypad({ correctCode, onSuccess }: KeypadProps) {
           <div className="mt-6 text-center min-h-6">
             {status === "success" && (
               <p className="text-green-400 font-mono font-bold text-lg animate-pulse">
-                ✓ PASS
+                PASS
               </p>
             )}
             {status === "error" && (
               <p className="text-red-400 font-mono font-bold text-lg animate-pulse">
-                ✗ DENIED
+                DENIED
               </p>
             )}
             {status === "idle" && input.length > 0 && (

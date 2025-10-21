@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   EscapeRoom.init({
-    roomIndex: DataTypes.INTEGER,
     layerCount: DataTypes.INTEGER,
     timerMinutes: DataTypes.INTEGER,
     layers: DataTypes.JSON,
