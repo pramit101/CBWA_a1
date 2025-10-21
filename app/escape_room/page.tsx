@@ -30,6 +30,9 @@ export default function EscapeRoom() {
     { id: 1, name: "Layer 1", background: 0 },
   ]);
   const [currentLayerId, setCurrentLayerId] = useState(1);
+  const currentLayer = layers.find((l) => l.id === currentLayerId);
+  const currentBgIndex = currentLayer?.background || 0;
+  const [popup, setPopup] = useState<string | null>(null);
   const [currentBgID, setCurrentBgID] = useState(1);
   const [layerCount, setLayerCount] = useState(1);
   const [codeInput, setCodeInput] = useState("");
@@ -54,7 +57,96 @@ export default function EscapeRoom() {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
+  const [SessionId, setSessionId] = useState(null)
+  const [questions, setQuestions] = useState<string[]>([]) 
+  const [isLoading, setIsLoading] = useState(true);
+  const [roomIndex, setRoomIndex] = useState<number>(0)
+  const [isSaving, setIsSaving] = useState(false);
   const [chunks, setChunks] = useState<string[]>([" ", " ", " ", " ", " "]);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const storedSessionId = localStorage.getItem('escapeRoomSessionId');
+      
+      if (storedSessionId) {
+        try {
+          const response = await fetch(`/api/escape-room/load?sessionId=${storedSessionId}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Restore ALL state
+            setSessionId(data.id);
+            setRoomIndex(data.roomName);
+            setLayerCount(data.layerCount);
+            setMinutes(data.timerMinutes);
+            setLayers(data.layers);
+            setCodeInput(data.keypadCode);
+            setHint(data.hint);
+            setQuizUnlock(data.quizUnlock);
+            setHelpContent(data.helpContent);
+            setQuiz(data.quiz);
+            setH1(data.h1);
+            setH2(data.h2);
+            setH3(data.h3);
+            setHQ(data.hiddenQuestion);
+            setHA(data.hiddenAnswer);
+            setChunks(data.sequenceChunks);
+            
+            console.log('Session loaded:', data.id);
+          }
+        } catch (error) {
+          console.error('Error loading session:', error);
+        }
+      }
+      
+      setIsLoading(false);
+    };
+  
+    loadSession();
+  }, []);
+
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    try {
+      const response = await fetch('/api/escape-room/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: SessionId,
+          roomIndex: roomIndex,
+          layerCount: layerCount,
+          timerMinutes: minutes,
+          layers: layers,
+          keypadCode: codeInput,
+          hint: hint,
+          quizUnlock: quizUnlock,
+          helpContent: helpContent,
+          quiz: quiz,
+          h1: h1,
+          h2: h2,
+          h3: h3,
+          hiddenQuestion: HQ,
+          hiddenAnswer: HA,
+          sequenceChunks: chunks
+        })
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('escapeRoomSessionId', data.id);
+        setSessionId(data.id);
+        alert('Saved successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving:', error);
+      alert('Error saving session');
+    }
+    
+    setIsSaving(false);
+  };
 
   const handleSetCode = () => {
     if (codeInput.trim() !== "") {
@@ -114,12 +206,9 @@ export default function EscapeRoom() {
     "Exit",
   ];
 
-  const currentLayer = layers.find((l) => l.id === currentLayerId);
-  const currentBgIndex = currentLayer?.background || 0;
-  const [popup, setPopup] = useState<string | null>(null);
 
   const Buttons = () => {
-    if (currentBgID == 1) {
+    if (currentBgIndex == 0) {
       return (
         <div className="relative w-full h-full">
           <button
@@ -170,7 +259,7 @@ export default function EscapeRoom() {
           />
         </div>
       );
-    } else if (currentBgID == 2) {
+    } else if (currentBgIndex == 1) {
       return (
         <div className="relative w-full h-full">
           <button
@@ -205,7 +294,7 @@ export default function EscapeRoom() {
           />
         </div>
       );
-    } else if (currentBgID == 3) {
+    } else if (currentBgIndex == 2) {
       return (
         <div className="relative w-full h-full">
           <button
@@ -270,7 +359,7 @@ export default function EscapeRoom() {
           />
         </div>
       );
-    } else if (currentBgID == 4) {
+    } else if (currentBgIndex == 3) {
       return (
         <div className="relative w-full h-full">
           <button
@@ -377,7 +466,7 @@ export default function EscapeRoom() {
           </button>
         </div>
       );
-    } else if (currentBgID == 5) {
+    } else if (currentBgIndex == 4) {
       return (
         <button
           onClick={() => setPopup("sequence")}
@@ -513,7 +602,7 @@ export default function EscapeRoom() {
             ) : (
               <>
                 <Image
-                  src={backgrounds[currentBgIndex]}
+                  src={backgrounds[layers[currentLayerId].background]}
                   alt="Golden key"
                   fill
                   className="object-cover rounded-lg overflow-hidden resize-none"

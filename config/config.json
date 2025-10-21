@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "my_app_dev",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "your-secure-password",
+    "database": "my_app_prod",
+    "host": "postgres-db",
+    "dialect": "postgres"
+  }
+}
